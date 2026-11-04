@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawHaven 🐾 - A Little Love. A Lifetime of Happiness.</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        canvasBg: '#FFFDF9',
+                        butterYellow: '#FFF3B0',
+                        peachSoft: '#FFE5D9',
+                        peachAccent: '#E07A5F',
+                        lavenderSoft: '#F3E8FF',
+                        lavenderAccent: '#8B5CF6',
+                        mintSoft: '#E8F5E9',
+                        mintAccent: '#2E7D32',
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFFDF9;
+            color: #374151;
+        }
+    </style>
+</head>
+<body class="bg-canvasBg text-slate-700 antialiased selection:bg-peachAccent selection:text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- ROBUST PET DATA WITH GUARANTEED WORKING FALLBACK HANDLERS ---
+        const petsData = [
+            { 
+                id: 1, name: "Bella 🐾", breed: "Golden Retriever Puppy", age: "2 Months", gender: "Female", location: "San Francisco, CA", category: "dogs", 
+                image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-amber-100 text-amber-700", icon: "fa-dog", description: "Bella radiates pure sunshine! With her irresistible puppy eyes and fluffy golden coat, she greets every morning with joyful tail wags." 
+            },
+            { 
+                id: 2, name: "Milo 🐱", breed: "British Shorthair Kitten", age: "3 Months", gender: "Male", location: "Oakland, CA", category: "cats", 
+                image: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat", description: "Milo is a precious little ball of grey fluff who loves curling up in warm sunbeams and purring softly in your lap." 
+            },
+            { 
+                id: 3, name: "Charlie 🐶", breed: "Beagle Puppy", age: "3 Months", gender: "Male", location: "San Jose, CA", category: "dogs", 
+                image: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-amber-100 text-amber-700", icon: "fa-dog", description: "Little Charlie has the softest floppy ears and the most curious nose. He is ready for endless cuddles and playful adventures." 
+            },
+            { 
+                id: 4, name: "Luna 🐰", breed: "Netherland Dwarf Bunny", age: "2 Months", gender: "Female", location: "Berkeley, CA", category: "rabbits", 
+                image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-pink-100 text-pink-700", icon: "fa-rabbit", description: "Luna is an impossibly cute bunny with twitchy pink nose-tips and velvety fur. She loves nibbling fresh clover and soft hay." 
+            },
+            { 
+                id: 5, name: "Oliver 🐱", breed: "Cute Persian Kitten", age: "4 Months", gender: "Male", location: "San Francisco, CA", category: "cats", 
+                image: "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat", description: "Oliver looks like a little animated cotton ball! He has striking blue eyes and an extremely affectionate, playful personality." 
+            },
+            { 
+                id: 6, name: "Kiwi 🐦", breed: "Baby Budgerigar", age: "2 Months", gender: "Female", location: "Palo Alto, CA", category: "birds", 
+                image: "https://images.unsplash.com/photo-1522837023312-d1d034273574?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-emerald-100 text-emerald-700", icon: "fa-feather", description: "Kiwi is a stunning, vibrantly colored baby bird who loves singing soft, cheerful morning tunes and sitting on your finger." 
+            },
+            { 
+                id: 7, name: "Rocky 🐶", breed: "Fluffy Pomeranian", age: "4 Months", gender: "Male", location: "San Jose, CA", category: "dogs", 
+                image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-amber-100 text-amber-700", icon: "fa-dog", description: "Rocky is a tiny, energetic cloud of joy! He loves playing fetch with miniature balls and giving sweet puppy kisses." 
+            },
+            { 
+                id: 8, name: "Chloe 🐱", breed: "Adorable Scottish Fold", age: "3 Months", gender: "Female", location: "Oakland, CA", category: "cats", 
+                image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat", description: "Chloe's folded ears and big round eyes make her look like a living stuffed animal. She is impossibly sweet and gentle." 
+            },
+            { 
+                id: 9, name: "Sunny 🐦", breed: "Baby Cockatiel", age: "3 Months", gender: "Male", location: "San Francisco, CA", category: "birds", 
+                image: "https://images.unsplash.com/photo-1548094772-d1e97f4c2438?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-yellow-100 text-yellow-700", icon: "fa-feather", description: "Sunny has cute yellow crest feathers and a delightful whistle. He is hand-raised and adores gentle head scratches." 
+            },
+            { 
+                id: 10, name: "Thumper 🐰", breed: "Holland Lop Bunny", age: "3 Months", gender: "Male", location: "Palo Alto, CA", category: "rabbits", 
+                image: "https://images.unsplash.com/photo-1535294435445-d7249521ef2e?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-pink-100 text-pink-700", icon: "fa-rabbit", description: "Thumper has the cutest floppy ears and loves doing happy binkies across soft carpets." 
+            },
+            { 
+                id: 11, name: "Felix 🐱", breed: "Playful Ginger Tabby", age: "3 Months", gender: "Male", location: "Berkeley, CA", category: "cats", 
+                image: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat", description: "Felix is a bouncy orange tabby kitten who will steal your heart with his silly antics and warm purrs." 
+            },
+            { 
+                id: 12, name: "Blue 🐦", breed: "Pacific Parrotlet", age: "4 Months", gender: "Female", location: "San Jose, CA", category: "birds", 
+                image: "https://images.unsplash.com/photo-1610296669228-502fb59d0295?auto=format&fit=crop&w=600&q=80",
+                fallbackBg: "bg-blue-100 text-blue-700", icon: "fa-feather", description: "Blue is a jewel-toned little bird packed with big personality. Extremely smart, curious, and sweet." 
+            }
+        ];
+
+        const galleryData = [
+            { id: 1, title: "Joyful Puppy Fetch 🐶", category: "Dogs", image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-amber-100 text-amber-700", icon: "fa-dog" },
+            { id: 2, title: "Curious Little Kitty 🐱", category: "Cats", image: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat" },
+            { id: 3, title: "Fluffy Hopping Bunny 🐰", category: "Rabbits", image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-pink-100 text-pink-700", icon: "fa-rabbit" },
+            { id: 4, title: "Sweet Chirping Bird 🐦", category: "Birds", image: "https://images.unsplash.com/photo-1548094772-d1e97f4c2438?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-emerald-100 text-emerald-700", icon: "fa-feather" },
+            { id: 5, title: "Playful Golden Paws 🐾", category: "Dogs", image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-amber-100 text-amber-700", icon: "fa-dog" },
+            { id: 6, title: "Cozy Naptime Cuddles 💤", category: "Cats", image: "https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=600&q=80", fallbackBg: "bg-orange-100 text-orange-700", icon: "fa-cat" }
+        ];
+
+        const careGuidesData = [
+            {
+                id: 'nutrition',
+                title: "Pet Nutrition & Diet 🥩",
+                icon: "fa-bowl-food",
+                color: "bg-peachSoft text-peachAccent",
+                border: "border-orange-100",
+                summary: "Optimal nutrition forms the bedrock of vitality. Provide species-appropriate, high-quality commercial or vet-approved raw diets tailored strictly to your pet's life stage.",
+                details: "Proper feeding goes beyond just filling a bowl. Dogs and cats have distinct biological needs: dogs are omnivores with a capacity for diverse nutrients, while cats are obligate carnivores requiring essential taurine and animal protein. Birds require balanced seed and pellet mixes with fresh greens, while rabbits thrive on timothy hay and leafy vegetables. Always ensure fresh, clean filtered water is accessible 24/7."
+            },
+            {
+                id: 'grooming',
+                title: "Grooming & Coat Health ✨",
+                icon: "fa-scissors",
+                color: "bg-mintSoft text-mintAccent",
+                border: "border-emerald-100",
+                summary: "Regular brushing removes loose undercoat hair, prevents painful matting, and distributes natural skin oils for a radiant coat.",
+                details: "Grooming is also a wonderful bonding ritual. Brush long-haired pets daily and short-haired companions weekly to minimize shedding and hairballs. Check ears weekly for signs of redness or moisture, brush teeth with pet-safe enzymatic toothpaste, and trim nails carefully to prevent snagging or joint strain."
+            },
+            {
+                id: 'training',
+                title: "Positive Reinforcement Training 🎓",
+                icon: "fa-graduation-cap",
+                color: "bg-lavenderSoft text-lavenderAccent",
+                border: "border-purple-100",
+                summary: "Reward-based training builds unshakeable trust and confidence. Socialize your companion early to diverse environments and friendly faces.",
+                details: "Animals learn best through positive association—rewarding desired behaviors with treats, praise, or play rather than punishment. Early socialization helps puppies, kittens, and birds become secure, calm adult pets who handle new noises, car rides, and veterinary visits with grace and confidence."
+            },
+            {
+                id: 'vaccination',
+                title: "Vaccination & Preventative Care 💉",
+                icon: "fa-syringe",
+                color: "bg-peachSoft text-peachAccent",
+                border: "border-orange-100",
+                summary: "Core vaccinations protect against severe viral and bacterial threats such as rabies, parvovirus, and feline distemper.",
+                details: "Work closely with your veterinarian to establish a tailored wellness schedule. Keep up-to-date with year-round parasite preventatives for fleas, ticks, and heartworms. Regular annual or bi-annual veterinary wellness exams can catch underlying health conditions before they become serious."
+            },
+            {
+                id: 'exercise',
+                title: "Daily Exercise & Mental Play 🎾",
+                icon: "fa-person-running",
+                color: "bg-mintSoft text-mintAccent",
+                border: "border-emerald-100",
+                summary: "Physical and mental stimulation prevents destructive boredom and maintains joint mobility and emotional calm.",
+                details: "Dogs thrive on daily walks, fetch games, and sniffing adventures. Cats love hunting simulated prey with wand toys and exploring puzzle treat boxes. Smaller pets like rabbits and birds need safe, supervised out-of-cage time to explore, fly, and stretch their limbs."
+            },
+            {
+                id: 'hygiene',
+                title: "General Hygiene & Dental Care 🦷",
+                icon: "fa-shield-heart",
+                color: "bg-lavenderSoft text-lavenderAccent",
+                border: "border-purple-100",
+                summary: "Periodontal disease impacts overall organ health. Implement routine teeth brushing or veterinary dental chews.",
+                details: "Dental health is directly linked to heart and kidney health in pets. In addition to dental chews, professional cleanings under veterinary guidance keep gums healthy. Maintain clean bedding, wash food bowls daily, and keep living areas tidy and fresh."
+            }
+        ];
+
+        // --- SAFE IMAGE COMPONENT WITH BUILT-IN FALLBACK ---
+        function SafeImage({ src, alt, fallbackBg, icon, className }) {
+            const [hasError, setHasError] = useState(false);
+
+            if (hasError || !src) {
+                return (
+                    <div className={`w-full h-full flex flex-col items-center justify-center ${fallbackBg || 'bg-orange-100 text-peachAccent'} p-6 transition`}>
+                        <i className={`fa-solid ${icon || 'fa-paw'} text-5xl mb-2 animate-bounce`}></i>
+                        <span className="font-semibold text-sm tracking-wide">{alt}</span>
+                    </div>
+                );
+            }
+
+            return (
+                <img 
+                    src={src} 
+                    alt={alt} 
+                    onError={() => setHasError(true)}
+                    className={className}
+                />
+            );
+        }
+
+        // --- COMPONENTS ---
+
+        function Navbar({ currentTab, setCurrentTab }) {
+            const [isOpen, setIsOpen] = useState(false);
+            const navItems = [
+                { id: 'home', label: 'Home 🏠' },
+                { id: 'about', label: 'About 💖' },
+                { id: 'adopt', label: 'Adopt a Pet 🐾' },
+                { id: 'gallery', label: 'Gallery 📸' },
+                { id: 'care', label: 'Pet Care 🩺' },
+                { id: 'contact', label: 'Contact 💌' }
+            ];
+
+            return (
+                <nav className="sticky top-0 z-50 bg-canvasBg/95 backdrop-blur-md border-b border-orange-100 shadow-xs">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between h-20 items-center">
+                            {/* Logo */}
+                            <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setCurrentTab('home')}>
+                                <div className="w-11 h-11 rounded-full bg-peachAccent flex items-center justify-center text-white text-xl shadow-md group-hover:scale-110 transition duration-300">
+                                    <i className="fa-solid fa-paw"></i>
+                                </div>
+                                <span className="text-2xl font-bold tracking-tight text-slate-800">Paw<span className="text-peachAccent">Haven</span> 🐾</span>
+                            </div>
+
+                            {/* Desktop Navigation */}
+                            <div className="hidden md:flex items-center space-x-6">
+                                {navItems.map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setCurrentTab(item.id)}
+                                        className={`font-medium transition-colors duration-200 text-sm ${currentTab === item.id ? 'text-peachAccent font-semibold border-b-2 border-peachAccent pb-1' : 'text-slate-600 hover:text-peachAccent'}`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Adopt CTA Button */}
+                            <div className="hidden lg:block">
+                                <button 
+                                    onClick={() => setCurrentTab('adopt')}
+                                    className="bg-peachAccent text-white px-6 py-2.5 rounded-full font-medium shadow-md hover:bg-opacity-90 transition transform hover:-translate-y-0.5"
+                                >
+                                    Find a Pet 🐶
+                                </button>
+                            </div>
+
+                            {/* Mobile Menu Button */}
+                            <div className="md:hidden flex items-center">
+                                <button onClick={() => setIsOpen(!isOpen)} className="text-slate-700 focus:outline-none text-2xl">
+                                    <i className={`fa-solid ${isOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mobile Navigation Menu */}
+                    {isOpen && (
+                        <div className="md:hidden bg-canvasBg border-b border-orange-100 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+                            {navItems.map(item => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => { setCurrentTab(item.id); setIsOpen(false); }}
+                                    className={`block w-full text-left px-4 py-2.5 rounded-xl font-medium ${currentTab === item.id ? 'bg-peachSoft text-peachAccent font-semibold' : 'text-slate-700 hover:bg-orange-50'}`}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </nav>
+            );
+        }
+
+        function Footer({ setCurrentTab }) {
+            return (
+                <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                            <div className="space-y-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-full bg-peachAccent flex items-center justify-center text-white text-xl">
+                                        <i className="fa-solid fa-paw"></i>
+                                    </div>
+                                    <span className="text-2xl font-bold tracking-tight text-white">Paw<span className="text-peachAccent">Haven</span> 🐾</span>
+                                </div>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    "A Little Love. A Lifetime of Happiness." Where quiet paws leave giant footprints on our souls and turn lonely days into pure joy. 🐶🐱🐰🐦
+                                </p>
+                            </div>
+                            <div>
+                                <h4 className="text-white font-semibold mb-4 text-base">Quick Links 🔗</h4>
+                                <ul className="space-y-2.5 text-sm">
+                                    <li><button onClick={() => setCurrentTab('home')} className="hover:text-peachAccent transition">Home 🏠</button></li>
+                                    <li><button onClick={() => setCurrentTab('about')} className="hover:text-peachAccent transition">About Us 💖</button></li>
+                                    <li><button onClick={() => setCurrentTab('adopt')} className="hover:text-peachAccent transition">Adopt a Pet 🐾</button></li>
+                                    <li><button onClick={() => setCurrentTab('gallery')} className="hover:text-peachAccent transition">Pet Gallery 📸</button></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white font-semibold mb-4 text-base">Resources 📚</h4>
+                                <ul className="space-y-2.5 text-sm">
+                                    <li><button onClick={() => setCurrentTab('care')} className="hover:text-peachAccent transition">Pet Care Guides 🩺</button></li>
+                                    <li><button onClick={() => setCurrentTab('contact')} className="hover:text-peachAccent transition">Adoption Support 💌</button></li>
+                                    <li><button onClick={() => setCurrentTab('contact')} className="hover:text-peachAccent transition">FAQs ❓</button></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white font-semibold mb-4 text-base">Stay Connected ✨</h4>
+                                <p className="text-sm text-slate-400 mb-4">Subscribe for heartwarming rescue tales, cute photos, and expert pet tips.</p>
+                                <div className="flex">
+                                    <input type="email" placeholder="Your email address" className="bg-slate-800 text-sm text-white px-4 py-2.5 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-peachAccent w-full border border-slate-700" />
+                                    <button className="bg-peachAccent text-white px-4 py-2.5 rounded-r-xl font-medium hover:bg-opacity-90 transition">
+                                        <i className="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
+                            <p>&copy; 2026 PawHaven Inc. Made with boundless love for animals. ❤️🐾</p>
+                            <div className="flex space-x-6 mt-4 sm:mt-0 text-lg">
+                                <a href="#" className="hover:text-peachAccent transition"><i className="fa-brands fa-facebook-f"></i></a>
+                                <a href="#" className="hover:text-peachAccent transition"><i className="fa-brands fa-instagram"></i></a>
+                                <a href="#" className="hover:text-peachAccent transition"><i className="fa-brands fa-twitter"></i></a>
+                                <a href="#" className="hover:text-peachAccent transition"><i className="fa-brands fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            );
+        }
+
+        function BackToTop() {
+            const [visible, setVisible] = useState(false);
+            useEffect(() => {
+                const toggleVisible = () => {
+                    if (window.pageYOffset > 300) setVisible(true);
+                    else setVisible(false);
+                };
+                window.addEventListener('scroll', toggleVisible);
+                return () => window.removeEventListener('scroll', toggleVisible);
+            }, []);
+
+            const scrollToTop = () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            return (
+                visible && (
+                    <button onClick={scrollToTop} className="fixed bottom-6 right-6 z-40 bg-peachAccent text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-opacity-90 transition transform hover:scale-110">
+                        <i className="fa-solid fa-arrow-up"></i>
+                    </button>
+                )
+            );
+        }
+
+        // --- PAGES ---
+
+        function HomePage({ setCurrentTab, onSelectPet }) {
+            const featuredPets = petsData.slice(0, 3);
+            const testimonials = [
+                { quote: "Opening our home to Bella changed our lives forever. PawHaven filled our house with a boundless, gentle joy we never knew was missing. 🐶❤️", name: "Sarah & Mark L.", role: "Adopted Bella in 2025" },
+                { quote: "The emotional warmth and genuine guidance from this organization made our adoption journey feel like a sacred, beautiful milestone. 🐱✨", name: "David K.", role: "Cat Parent" },
+                { quote: "PawHaven doesn't just find homes for animals; they heal hearts on both ends of the leash. Simply breathtaking work. 🐰💖", name: "Elena R.", role: "Animal Advocate" }
+            ];
+
+            return (
+                <div className="space-y-20 pb-16">
+                    {/* Hero Section */}
+                    <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-gradient-to-b from-peachSoft/50 via-butterYellow/20 to-canvasBg">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                                <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                                    <div className="inline-flex items-center space-x-2 bg-peachSoft px-4 py-1.5 rounded-full text-peachAccent text-sm font-semibold shadow-xs">
+                                        <i className="fa-solid fa-heart animate-pulse"></i>
+                                        <span>Where Quiet Paws Leave Giant Footprints on Our Souls 🐾</span>
+                                    </div>
+                                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
+                                        Every Pet Deserves a <span className="text-peachAccent">Loving Home. 🏡</span>
+                                    </h1>
+                                    <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                                        Animals don't ask for much—just a warm place to sleep, a gentle hand to stroke their fur, and someone who thinks the world of them. In return, they give us their entire heartbeat. Discover your new best friend today! 🐶🐱🐰🐦
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
+                                        <button 
+                                            onClick={() => setCurrentTab('adopt')}
+                                            className="bg-peachAccent text-white px-8 py-3.5 rounded-full font-medium shadow-lg hover:bg-opacity-90 transition transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
+                                        >
+                                            <span>Explore Adorable Pets 🐾</span>
+                                            <i className="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentTab('about')}
+                                            className="bg-white text-slate-700 border border-orange-200 px-8 py-3.5 rounded-full font-medium shadow-xs hover:bg-orange-50 transition"
+                                        >
+                                            Our Mission ✨
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="lg:col-span-5 relative">
+                                    <div className="relative mx-auto max-w-md lg:max-w-none h-[400px] sm:h-[450px] rounded-3xl overflow-hidden shadow-2xl bg-orange-100 flex items-center justify-center">
+                                        <SafeImage 
+                                            src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80" 
+                                            alt="PawHaven Sanctuary Pets" 
+                                            fallbackBg="bg-peachSoft text-peachAccent"
+                                            icon="fa-house-chimney-heart"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Featured Pets */}
+                    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+                            <div>
+                                <span className="text-mintAccent font-semibold text-sm uppercase tracking-wider">Waiting For You 🥺</span>
+                                <h2 className="text-3xl font-bold text-slate-900 mt-1">Featured Cute Companions 🐶🐱🐰🐦</h2>
+                            </div>
+                            <button 
+                                onClick={() => setCurrentTab('adopt')}
+                                className="mt-4 md:mt-0 text-peachAccent font-semibold hover:underline flex items-center space-x-2"
+                            >
+                                <span>View All Available Pets ({petsData.length})</span>
+                                <i className="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {featuredPets.map(pet => (
+                                <div key={pet.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 border border-orange-100/60 flex flex-col">
+                                    <div className="relative h-64 overflow-hidden bg-orange-50">
+                                        <SafeImage 
+                                            src={pet.image} 
+                                            alt={pet.name} 
+                                            fallbackBg={pet.fallbackBg}
+                                            icon={pet.icon}
+                                            className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                                        />
+                                        <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-semibold text-slate-700 shadow-sm capitalize">
+                                            {pet.category}
+                                        </span>
+                                    </div>
+                                    <div className="p-6 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <h3 className="text-2xl font-bold text-slate-900">{pet.name}</h3>
+                                                <span className="text-sm font-medium text-peachAccent bg-peachSoft px-3 py-0.5 rounded-full">{pet.age}</span>
+                                            </div>
+                                            <p className="text-slate-500 text-sm mb-4"><i className="fa-solid fa-tag text-orange-200 mr-2"></i>{pet.breed}</p>
+                                            <p className="text-slate-600 text-sm line-clamp-2 mb-6">{pet.description}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => { onSelectPet(pet); setCurrentTab('adopt'); }}
+                                            className="w-full bg-mintSoft text-mintAccent hover:bg-mintAccent hover:text-white py-3 rounded-2xl font-medium transition duration-200"
+                                        >
+                                            View Details & Adopt 🐾
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Why Choose PawHaven */}
+                    <section className="bg-mintSoft/30 py-20">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center max-w-2xl mx-auto mb-16">
+                                <span className="text-mintAccent font-semibold text-sm uppercase tracking-wider">Our Sacred Promise 💖</span>
+                                <h2 className="text-3xl font-bold text-slate-900 mt-1">Why Choose PawHaven?</h2>
+                                <p className="text-slate-600 mt-2">Every animal in our care is treated with utmost dignity, medical attention, and deep heartfelt love.</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-emerald-100 space-y-4 text-center">
+                                    <div className="w-16 h-16 bg-mintSoft text-mintAccent rounded-2xl mx-auto flex items-center justify-center text-2xl">
+                                        <i className="fa-solid fa-house-chimney-heart"></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Verified Sanctuary 🏡</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">Complete veterinary evaluations, comprehensive vaccinations, and tender behavioral rehabilitation.</p>
+                                </div>
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-orange-100 space-y-4 text-center">
+                                    <div className="w-16 h-16 bg-peachSoft text-peachAccent rounded-2xl mx-auto flex items-center justify-center text-2xl">
+                                        <i className="fa-solid fa-hand-holding-heart"></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Lifelong Guidance ✨</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">Continuous behavioral support, nutritional counseling, and a supportive family community.</p>
+                                </div>
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-purple-100 space-y-4 text-center">
+                                    <div className="w-16 h-16 bg-lavenderSoft text-lavenderAccent rounded-2xl mx-auto flex items-center justify-center text-2xl">
+                                        <i className="fa-solid fa-users"></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900">Compassionate Community 🐾</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">Connect with fellow pet parents who share a deep devotion to animal welfare and gentle living.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Testimonials */}
+                    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-2xl mx-auto mb-16">
+                            <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">Heartwarming Tales 🥰</span>
+                            <h2 className="text-3xl font-bold text-slate-900 mt-1">Stories of Transformation</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {testimonials.map((t, idx) => (
+                                <div key={idx} className="bg-white p-8 rounded-3xl shadow-sm border border-orange-100/60 flex flex-col justify-between">
+                                    <p className="text-slate-600 text-sm italic mb-6 leading-relaxed">"{t.quote}"</p>
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">{t.name}</h4>
+                                        <p className="text-xs text-peachAccent font-medium mt-0.5">{t.role}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        function AboutUs() {
+            return (
+                <div className="space-y-20 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">Our Heart & Soul 💖</span>
+                        <h1 className="text-4xl font-bold text-slate-900">Healing Lives, One Paw at a Time</h1>
+                        <p className="text-slate-600 text-lg leading-relaxed">
+                            PawHaven was born out of a simple, uncompromising belief: that every animal deserves to feel safe, valued, and unconditionally adored. 🐶🐱🐰🐦
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div className="space-y-6">
+                            <div className="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-3">
+                                <div className="w-12 h-12 bg-peachSoft text-peachAccent rounded-2xl flex items-center justify-center text-xl font-bold">
+                                    <i className="fa-solid fa-bullseye"></i>
+                                </div>
+                                <h3 className="text-2xl font-bold text-slate-900">Our Mission 🎯</h3>
+                                <p className="text-slate-600 leading-relaxed text-sm">
+                                    To rescue abandoned and vulnerable animals, restore their physical and emotional well-being, and place them into loving homes where they can flourish for the rest of their days.
+                                </p>
+                            </div>
+                            <div className="bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm space-y-3">
+                                <div className="w-12 h-12 bg-mintSoft text-mintAccent rounded-2xl flex items-center justify-center text-xl font-bold">
+                                    <i className="fa-solid fa-eye"></i>
+                                </div>
+                                <h3 className="text-2xl font-bold text-slate-900">Our Vision ✨</h3>
+                                <p className="text-slate-600 leading-relaxed text-sm">
+                                    A compassionate society where shelter animals are no longer forgotten, and where human-animal bonds are cherished as essential to emotional well-being and community kindness.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="relative rounded-3xl overflow-hidden shadow-xl h-[450px] bg-orange-100">
+                            <SafeImage 
+                                src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=600&q=80" 
+                                alt="Caring for animals" 
+                                fallbackBg="bg-mintSoft text-mintAccent"
+                                icon="fa-hands-holding-child"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="bg-butterYellow/30 rounded-3xl p-8 sm:p-12 border border-orange-100 space-y-8">
+                        <div className="text-center max-w-2xl mx-auto">
+                            <h2 className="text-3xl font-bold text-slate-900">Pillars of Responsible Ownership 🏡</h2>
+                            <p className="text-slate-600 mt-2 text-sm">Welcoming a companion into your world is a sacred commitment built upon daily mindfulness and care.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="bg-white p-6 rounded-2xl shadow-xs space-y-3">
+                                <div className="text-peachAccent text-2xl font-bold"><i className="fa-solid fa-stethoscope"></i></div>
+                                <h4 className="font-bold text-slate-900">Veterinary Care 🩺</h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">Routine checkups, preventive vaccinations, and prompt medical attention.</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-xs space-y-3">
+                                <div className="text-peachAccent text-2xl font-bold"><i className="fa-solid fa-bowl-food"></i></div>
+                                <h4 className="font-bold text-slate-900">Balanced Nutrition 🥩</h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">Species-appropriate diets formulated for age, lifestyle, and health needs.</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-xs space-y-3">
+                                <div className="text-peachAccent text-2xl font-bold"><i className="fa-solid fa-person-walking"></i></div>
+                                <h4 className="font-bold text-slate-900">Active Enrichment 🎾</h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">Daily physical exercise and mental stimulation to prevent boredom.</p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-xs space-y-3">
+                                <div className="text-peachAccent text-2xl font-bold"><i className="fa-solid fa-house"></i></div>
+                                <h4 className="font-bold text-slate-900">Safe Sanctuary ☁️</h4>
+                                <p className="text-slate-600 text-xs leading-relaxed">A secure, hazard-free indoor environment filled with patience and love.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function AdoptPage({ selectedPet, onClearSelectedPet }) {
+            const [selectedCategory, setSelectedCategory] = useState('all');
+            const [searchTerm, setSearchTerm] = useState('');
+            const [modalPet, setModalPet] = useState(selectedPet || null);
+            
+            const [formSubmitted, setFormSubmitted] = useState(false);
+            const [formData, setFormData] = useState({ name: '', email: '', phone: '', address: '', message: '' });
+
+            useEffect(() => {
+                if (selectedPet) setModalPet(selectedPet);
+            }, [selectedPet]);
+
+            const filteredPets = petsData.filter(pet => {
+                const matchesCategory = selectedCategory === 'all' || pet.category === selectedCategory;
+                const matchesSearch = pet.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                      pet.breed.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      pet.location.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            const handleFormSubmit = (e) => {
+                e.preventDefault();
+                setFormSubmitted(true);
+            };
+
+            return (
+                <div className="space-y-12 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">Meet Your Match 🐾</span>
+                        <h1 className="text-4xl font-bold text-slate-900">Adopt a Cute Pet 🐶🐱🐰🐦</h1>
+                        <p className="text-slate-600 text-lg">Browse our adorable rescues looking for their forever homes. Filter by animal category or search by name and breed.</p>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-orange-100">
+                        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                            {['all', 'dogs', 'cats', 'rabbits', 'birds'].map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setSelectedCategory(cat)}
+                                    className={`px-5 py-2 rounded-full font-medium text-sm capitalize transition ${selectedCategory === cat ? 'bg-peachAccent text-white shadow-sm' : 'bg-orange-50 text-slate-700 hover:bg-orange-100'}`}
+                                >
+                                    {cat} {cat === 'dogs' ? '🐶' : cat === 'cats' ? '🐱' : cat === 'rabbits' ? '🐰' : cat === 'birds' ? '🐦' : '✨'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="relative w-full md:w-72">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                <i className="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                placeholder="Search name, breed..." 
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-11 pr-4 py-2.5 rounded-full bg-orange-50 border border-orange-100 text-sm focus:outline-none focus:ring-2 focus:ring-peachAccent"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {filteredPets.length > 0 ? (
+                            filteredPets.map(pet => (
+                                <div key={pet.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 border border-orange-100/60 flex flex-col">
+                                    <div className="relative h-64 overflow-hidden bg-orange-50">
+                                        <SafeImage 
+                                            src={pet.image} 
+                                            alt={pet.name} 
+                                            fallbackBg={pet.fallbackBg}
+                                            icon={pet.icon}
+                                            className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                                        />
+                                        <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-semibold text-slate-700 shadow-sm capitalize">
+                                            {pet.category}
+                                        </span>
+                                    </div>
+                                    <div className="p-6 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <h3 className="text-2xl font-bold text-slate-900">{pet.name}</h3>
+                                                <span className="text-sm font-medium text-peachAccent bg-peachSoft px-3 py-0.5 rounded-full">{pet.age}</span>
+                                            </div>
+                                            <p className="text-slate-500 text-sm mb-2"><i className="fa-solid fa-tag text-orange-200 mr-2"></i>{pet.breed}</p>
+                                            <p className="text-slate-500 text-sm mb-4"><i className="fa-solid fa-location-dot text-orange-200 mr-2"></i>{pet.location}</p>
+                                            <p className="text-slate-600 text-sm line-clamp-2 mb-6">{pet.description}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setModalPet(pet)}
+                                            className="w-full bg-peachAccent text-white py-3 rounded-2xl font-medium hover:bg-opacity-95 transition shadow-xs"
+                                        >
+                                            View More Details & Adopt 🐾
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-3 text-center py-16 bg-white rounded-3xl border border-orange-100">
+                                <div className="text-5xl text-slate-300 mb-4"><i className="fa-solid fa-paw"></i></div>
+                                <h3 className="text-xl font-bold text-slate-800">No pets found 🥺</h3>
+                                <p className="text-slate-500 text-sm mt-1">Try adjusting your search criteria or category filter.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {modalPet && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+                            <div className="bg-canvasBg rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-orange-100 my-8">
+                                <div className="relative h-72 sm:h-80 bg-orange-50">
+                                    <SafeImage 
+                                        src={modalPet.image} 
+                                        alt={modalPet.name} 
+                                        fallbackBg={modalPet.fallbackBg}
+                                        icon={modalPet.icon}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button 
+                                        onClick={() => { setModalPet(null); if(selectedPet) onClearSelectedPet(); setFormSubmitted(false); }}
+                                        className="absolute top-4 right-4 bg-white/90 hover:bg-white text-slate-700 w-10 h-10 rounded-full flex items-center justify-center shadow-md transition"
+                                    >
+                                        <i className="fa-solid fa-xmark text-lg"></i>
+                                    </button>
+                                    <span className="absolute bottom-4 left-4 bg-peachAccent text-white px-4 py-1 rounded-full text-sm font-semibold shadow-md">
+                                        {modalPet.gender} &bull; {modalPet.age}
+                                    </span>
+                                </div>
+
+                                <div className="p-8 space-y-8">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-orange-100 pb-6 gap-4">
+                                        <div>
+                                            <h2 className="text-3xl font-bold text-slate-900">{modalPet.name}</h2>
+                                            <p className="text-slate-500 text-sm mt-1"><i className="fa-solid fa-tag text-orange-200 mr-2"></i>{modalPet.breed} &bull; <i className="fa-solid fa-location-dot text-orange-200 ml-3 mr-1"></i>{modalPet.location}</p>
+                                        </div>
+                                        <div className="bg-mintSoft text-mintAccent font-semibold px-4 py-2 rounded-xl text-sm">
+                                            Ready for Adoption 🏡
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="font-bold text-slate-900 text-lg mb-2">About {modalPet.name} ✨</h4>
+                                        <p className="text-slate-600 text-sm leading-relaxed">{modalPet.description}</p>
+                                    </div>
+
+                                    <div className="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6">
+                                        <div className="border-b border-orange-100 pb-4">
+                                            <h3 className="text-xl font-bold text-slate-900">Adoption Enquiry Form 💌</h3>
+                                            <p className="text-slate-500 text-sm">Interested in giving {modalPet.name} a loving home? Fill out the form below.</p>
+                                        </div>
+
+                                        {formSubmitted ? (
+                                            <div className="bg-mintSoft border border-emerald-200 text-emerald-900 p-6 rounded-2xl text-center space-y-2">
+                                                <div className="text-3xl text-mintAccent"><i className="fa-solid fa-circle-check"></i></div>
+                                                <h4 className="font-bold text-lg">Enquiry Submitted Successfully! 🎉</h4>
+                                                <p className="text-sm text-emerald-800">Thank you for your interest in adopting {modalPet.name}. Our adoption coordinator will reach out to you within 24 hours.</p>
+                                                <button 
+                                                    onClick={() => { setFormSubmitted(false); setModalPet(null); if(selectedPet) onClearSelectedPet(); }}
+                                                    className="mt-4 bg-mintAccent text-white px-6 py-2 rounded-xl text-sm font-medium"
+                                                >
+                                                    Close
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <form onSubmit={handleFormSubmit} className="space-y-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                                                        <input 
+                                                            type="text" 
+                                                            required 
+                                                            placeholder="Jane Doe"
+                                                            value={formData.name}
+                                                            onChange={e => setFormData({...formData, name: e.target.value})}
+                                                            className="w-full px-4 py-2.5 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
+                                                        <input 
+                                                            type="email" 
+                                                            required 
+                                                            placeholder="jane@example.com"
+                                                            value={formData.email}
+                                                            onChange={e => setFormData({...formData, email: e.target.value})}
+                                                            className="w-full px-4 py-2.5 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+                                                        <input 
+                                                            type="tel" 
+                                                            required 
+                                                            placeholder="(555) 000-0000"
+                                                            value={formData.phone}
+                                                            onChange={e => setFormData({...formData, phone: e.target.value})}
+                                                            className="w-full px-4 py-2.5 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-slate-700 mb-1">City / Address *</label>
+                                                        <input 
+                                                            type="text" 
+                                                            required 
+                                                            placeholder="San Francisco, CA"
+                                                            value={formData.address}
+                                                            onChange={e => setFormData({...formData, address: e.target.value})}
+                                                            className="w-full px-4 py-2.5 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-700 mb-1">Why would you like to adopt {modalPet.name}? *</label>
+                                                    <textarea 
+                                                        required 
+                                                        rows="3"
+                                                        placeholder="Tell us a bit about your home and pet experience..."
+                                                        value={formData.message}
+                                                        onChange={e => setFormData({...formData, message: e.target.value})}
+                                                        className="w-full px-4 py-2.5 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                    ></textarea>
+                                                </div>
+                                                <button 
+                                                    type="submit" 
+                                                    className="w-full bg-peachAccent text-white py-3 rounded-xl font-medium hover:bg-opacity-95 transition shadow-sm"
+                                                >
+                                                    Submit Adoption Enquiry 🐾
+                                                </button>
+                                            </form>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function GalleryPage() {
+            const [filter, setFilter] = useState('All');
+            const categories = ['All', 'Dogs', 'Cats', 'Rabbits', 'Birds'];
+
+            const filteredGallery = filter === 'All' ? galleryData : galleryData.filter(item => item.category === filter);
+
+            return (
+                <div className="space-y-12 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">Visual Moments 📸</span>
+                        <h1 className="text-4xl font-bold text-slate-900">Pet Gallery 🐶🐱🐰🐦</h1>
+                        <p className="text-slate-600 text-lg">A visual celebration of rescue joy, peaceful slumbers, and playful spirit.</p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 justify-center">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setFilter(cat)}
+                                className={`px-6 py-2 rounded-full font-medium text-sm transition ${filter === cat ? 'bg-peachAccent text-white shadow-sm' : 'bg-white text-slate-700 border border-orange-100 hover:bg-orange-50'}`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        {filteredGallery.map(item => (
+                            <div key={item.id} className="group relative rounded-3xl overflow-hidden shadow-sm bg-white border border-orange-100 h-80 bg-orange-50">
+                                <SafeImage 
+                                    src={item.image} 
+                                    alt={item.title} 
+                                    fallbackBg={item.fallbackBg}
+                                    icon={item.icon}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                                    <span className="text-peachAccent text-xs font-semibold uppercase tracking-wider">{item.category}</span>
+                                    <h3 className="text-white text-xl font-bold">{item.title}</h3>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function CarePage() {
+            const [activeGuide, setActiveGuide] = useState(null);
+
+            return (
+                <div className="space-y-12 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">Expert Knowledge 🩺</span>
+                        <h1 className="text-4xl font-bold text-slate-900">Pet Care Guides 🐾</h1>
+                        <p className="text-slate-600 text-lg leading-relaxed">Scientifically grounded, universally correct advice to ensure your companion lives a long, healthy, and joyous life.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {careGuidesData.map(guide => (
+                            <div key={guide.id} className={`bg-white p-8 rounded-3xl shadow-sm border ${guide.border} space-y-4 flex flex-col justify-between`}>
+                                <div className="space-y-4">
+                                    <div className={`w-14 h-14 ${guide.color} rounded-2xl flex items-center justify-center text-2xl font-bold`}>
+                                        <i className={`fa-solid ${guide.icon}`}></i>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-slate-900">{guide.title}</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">{guide.summary}</p>
+                                </div>
+                                <button 
+                                    onClick={() => setActiveGuide(guide)}
+                                    className="pt-4 border-t border-orange-100 flex items-center text-peachAccent text-sm font-semibold cursor-pointer hover:underline w-full text-left"
+                                >
+                                    <span>Read Full Guide ✨</span>
+                                    <i className="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {activeGuide && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+                            <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-orange-100 space-y-6 relative max-h-[90vh] overflow-y-auto">
+                                <button 
+                                    onClick={() => setActiveGuide(null)}
+                                    className="absolute top-4 right-4 bg-orange-50 hover:bg-orange-100 text-slate-700 w-10 h-10 rounded-full flex items-center justify-center transition"
+                                >
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+
+                                <div className="flex items-center space-x-4">
+                                    <div className={`w-14 h-14 ${activeGuide.color} rounded-2xl flex items-center justify-center text-2xl font-bold shrink-0`}>
+                                        <i className={`fa-solid ${activeGuide.icon}`}></i>
+                                    </div>
+                                    <div>
+                                        <span className="text-xs font-semibold uppercase text-peachAccent tracking-wider">PawHaven Care Guide 🩺</span>
+                                        <h2 className="text-2xl font-bold text-slate-900">{activeGuide.title}</h2>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 text-slate-600 text-sm leading-relaxed border-t border-orange-100 pt-4">
+                                    <p className="font-medium text-slate-800 text-base">{activeGuide.summary}</p>
+                                    <p>{activeGuide.details}</p>
+                                    <div className="bg-peachSoft/40 p-4 rounded-2xl border border-orange-100 text-xs text-slate-700">
+                                        <i className="fa-solid fa-lightbulb text-peachAccent mr-2 text-sm"></i>
+                                        <strong>Pro Tip:</strong> Always consult your primary veterinarian for personalized recommendations tailored specifically to your pet's age, breed, and medical history.
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={() => setActiveGuide(null)}
+                                    className="w-full bg-peachAccent text-white py-3 rounded-2xl font-medium hover:bg-opacity-90 transition shadow-sm"
+                                >
+                                    Close Guide 🐾
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function ContactPage() {
+            const [submitted, setSubmitted] = useState(false);
+            const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setSubmitted(true);
+            };
+
+            return (
+                <div className="space-y-12 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <span className="text-peachAccent font-semibold text-sm uppercase tracking-wider">We're Here For You 💌</span>
+                        <h1 className="text-4xl font-bold text-slate-900">Contact PawHaven</h1>
+                        <p className="text-slate-600 text-lg">Have questions about adoption, volunteering, or animal care? Reach out anytime.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        <div className="lg:col-span-5 space-y-8">
+                            <div className="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6">
+                                <h3 className="text-2xl font-bold text-slate-900">Get in Touch 🏡</h3>
+                                <div className="space-y-6">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-peachSoft text-peachAccent rounded-2xl flex items-center justify-center text-xl shrink-0">
+                                            <i className="fa-solid fa-location-dot"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">Sanctuary Location 📍</h4>
+                                            <p className="text-slate-600 text-sm mt-0.5">123 Paws Avenue, Rescue District, San Francisco, CA 94107</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-mintSoft text-mintAccent rounded-2xl flex items-center justify-center text-xl shrink-0">
+                                            <i className="fa-solid fa-envelope"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">Email Address 📧</h4>
+                                            <p className="text-slate-600 text-sm mt-0.5">support@pawhaven.org</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-lavenderSoft text-lavenderAccent rounded-2xl flex items-center justify-center text-xl shrink-0">
+                                            <i className="fa-solid fa-phone"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900">Phone Support 📞</h4>
+                                            <p className="text-slate-600 text-sm mt-0.5">+1 (555) 345-PAWS</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-orange-100">
+                                    <h4 className="font-bold text-slate-900 mb-4">Follow Our Journey ✨</h4>
+                                    <div className="flex space-x-4">
+                                        <a href="#" className="w-10 h-10 bg-peachSoft text-peachAccent rounded-full flex items-center justify-center hover:bg-peachAccent hover:text-white transition"><i className="fa-brands fa-facebook-f"></i></a>
+                                        <a href="#" className="w-10 h-10 bg-peachSoft text-peachAccent rounded-full flex items-center justify-center hover:bg-peachAccent hover:text-white transition"><i className="fa-brands fa-instagram"></i></a>
+                                        <a href="#" className="w-10 h-10 bg-peachSoft text-peachAccent rounded-full flex items-center justify-center hover:bg-peachAccent hover:text-white transition"><i className="fa-brands fa-twitter"></i></a>
+                                        <a href="#" className="w-10 h-10 bg-peachSoft text-peachAccent rounded-full flex items-center justify-center hover:bg-peachAccent hover:text-white transition"><i className="fa-brands fa-youtube"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-7">
+                            <div className="bg-white p-8 sm:p-10 rounded-3xl border border-orange-100 shadow-sm">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Send Us a Message 💌</h3>
+                                <p className="text-slate-600 text-sm mb-6">Fill out the form below and our team will respond warmly and promptly.</p>
+
+                                {submitted ? (
+                                    <div className="bg-mintSoft border border-emerald-200 text-emerald-900 p-8 rounded-2xl text-center space-y-3">
+                                        <div className="text-4xl text-mintAccent"><i className="fa-solid fa-circle-check"></i></div>
+                                        <h4 className="font-bold text-xl">Message Sent Successfully! 🎉</h4>
+                                        <p className="text-sm text-emerald-800">Thank you for connecting with PawHaven. We have received your note and will be in touch shortly.</p>
+                                        <button 
+                                            onClick={() => setSubmitted(false)}
+                                            className="mt-4 bg-mintAccent text-white px-6 py-2.5 rounded-xl text-sm font-medium"
+                                        >
+                                            Send Another Message 🐾
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Your Name *</label>
+                                                <input 
+                                                    type="text" 
+                                                    required 
+                                                    placeholder="John Doe"
+                                                    value={form.name}
+                                                    onChange={e => setForm({...form, name: e.target.value})}
+                                                    className="w-full px-4 py-3 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Your Email *</label>
+                                                <input 
+                                                    type="email" 
+                                                    required 
+                                                    placeholder="john@example.com"
+                                                    value={form.email}
+                                                    onChange={e => setForm({...form, email: e.target.value})}
+                                                    className="w-full px-4 py-3 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Subject *</label>
+                                            <input 
+                                                type="text" 
+                                                required 
+                                                placeholder="Adoption Question / Volunteering"
+                                                value={form.subject}
+                                                onChange={e => setForm({...form, subject: e.target.value})}
+                                                className="w-full px-4 py-3 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Message *</label>
+                                            <textarea 
+                                                required 
+                                                rows="5"
+                                                placeholder="How can we help you?"
+                                                value={form.message}
+                                                onChange={e => setForm({...form, message: e.target.value})}
+                                                className="w-full px-4 py-3 rounded-xl bg-orange-50/50 border border-orange-100 text-sm focus:outline-none focus:ring-1 focus:ring-peachAccent"
+                                            ></textarea>
+                                        </div>
+                                        <button 
+                                            type="submit" 
+                                            className="w-full bg-peachAccent text-white py-3.5 rounded-xl font-medium hover:bg-opacity-95 transition shadow-sm"
+                                        >
+                                            Send Message 🐾
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function App() {
+            const [currentTab, setCurrentTab] = useState('home');
+            const [selectedPet, setSelectedPet] = useState(null);
+
+            useEffect(() => {
+                window.scrollTo(0, 0);
+            }, [currentTab]);
+
+            return (
+                <div className="min-h-screen flex flex-col font-poppins bg-canvasBg text-slate-700">
+                    <Navbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+
+                    <main className="flex-1">
+                        {currentTab === 'home' && <HomePage setCurrentTab={setCurrentTab} onSelectPet={(pet) => setSelectedPet(pet)} />}
+                        {currentTab === 'about' && <AboutUs />}
+                        {currentTab === 'adopt' && <AdoptPage selectedPet={selectedPet} onClearSelectedPet={() => setSelectedPet(null)} />}
+                        {currentTab === 'gallery' && <GalleryPage />}
+                        {currentTab === 'care' && <CarePage />}
+                        {currentTab === 'contact' && <ContactPage />}
+                    </main>
+
+                    <Footer setCurrentTab={setCurrentTab} />
+                    <BackToTop />
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
